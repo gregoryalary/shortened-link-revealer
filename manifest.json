@@ -1,0 +1,23 @@
+{
+  "name": "Shortened link revealer",
+  "version": "0.0.1",
+  "description": "Shortened link revealer",
+  "icons": {"128": "images/www.png"},
+  "permissions": [
+      "tabs", "<all_urls>"
+  ],
+  "browser_action": {
+      "default_icon": "images/www.png",
+      "default_title": "Shortened link revealer",
+      "popup": "popup.html"
+  },
+  "content_scripts": [
+      {
+          "matches": [ "<all_urls>" ],
+          "js": ["main.js"],
+          "css": ["main.css"],
+          "run_at": "document_end"
+      }
+  ],
+  "manifest_version": 2
+}

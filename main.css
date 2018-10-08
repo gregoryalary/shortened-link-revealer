@@ -1,0 +1,20 @@
+.shortened_link_revealer_tooltip {    
+    position: absolute;
+    background: #646464;
+    border-radius:4px;
+    padding: 6px 12px;
+    font-family: arial;
+    font-size: 15px;
+    color: #ffc64a;
+  }
+  .shortened_link_revealer_tooltip:before {
+    content : " ";
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #646464;
+    position:absolute;
+    bottom:-5px;
+    left:5px;
+  }
