@@ -2,6 +2,6 @@
 
 A simple chrome extension to reveal bitly effective urls.
 
-### Exemple
+### Example
 
 ![](https://raw.githubusercontent.com/gregoryalary/shortened-link-revealer/master/exemple/slr_demo.gif)
