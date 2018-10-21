@@ -7,37 +7,43 @@ class TipManager {
   static createTip(url) {
     return function (ev) {
       this.hovered = true;
+      this.popupCreated = false;
       var title = this.title;
       this.title = '';
       let that = this;
-      getTargetLink(url, function (result) {
-        if (that.hovered) {
-          console.log('-> ' + result);
-          that.setAttribute("shortened_link_revealer_tooltip", 'Bitly redirection : ' + result);
-          var tooltipWrap = document.createElement("div");
-          tooltipWrap.className = 'shortened_link_revealer_tooltip';
-          tooltipWrap.appendChild(document.createTextNode('Bitly redirection : ' + result));
-          var firstChild = document.body.firstChild;
-          firstChild.parentNode.insertBefore(tooltipWrap, firstChild);
-          var padding = 5;
-          var linkProps = that.getBoundingClientRect();
-          var tooltipProps = tooltipWrap.getBoundingClientRect();
-          var topPos = linkProps.top - (tooltipProps.height + padding);
-          tooltipWrap.setAttribute('style', 'top:' + topPos + 'px;' + 'left:' + linkProps.left + 'px;');
-        }
-      });
+      if (that.hovered && !that.popupCreated) {
+        that.popupCreated = true;
+        getTargetLink(url, function (result) {
+          if (that.hovered) {
+            console.log('-> ' + result);
+            if (result) {
+              that.setAttribute("shortened_link_revealer_tooltip", 'Redirection : ' + result);
+              var tooltipWrap = document.createElement("div");
+              tooltipWrap.className = 'shortened_link_revealer_tooltip';
+              tooltipWrap.appendChild(document.createTextNode(that.getAttribute('shortened_link_revealer_tooltip')));
+              var firstChild = document.body.firstChild;
+              firstChild.parentNode.insertBefore(tooltipWrap, firstChild);
+              var padding = 5;
+              var linkProps = that.getBoundingClientRect();
+              var tooltipProps = tooltipWrap.getBoundingClientRect();
+              var topPos = linkProps.top - (tooltipProps.height + padding);
+              tooltipWrap.setAttribute('style', 'top:' + topPos + 'px;' + 'left:' + linkProps.left + 'px;');
+            }
+          }
+        });
+      }
     }
   }
 
   static cancelTip(ev) {
-    if (this.hovered) {
-      this.hovered = false;
-      var title = this.getAttribute("shortened_link_revealer_tooltip");
-      this.title = title;
-      this.removeAttribute("shortened_link_revealer_tooltip");
-      let elements = document.querySelector(".shortened_link_revealer_tooltip");
-      if (elements) elements.remove();
-    }
+    this.hovered = false;
+    this.popupCreated = false;
+    var title = this.getAttribute("shortened_link_revealer_tooltip");
+    this.title = title;
+    this.removeAttribute("shortened_link_revealer_tooltip");
+    let elements = document.querySelector(".shortened_link_revealer_tooltip");
+    console.log(elements);
+    if (elements) elements.remove();
   }
 
 }
@@ -76,22 +82,12 @@ function transformLinks(links) {
 function getTargetLink(link, callback) {
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      let result = this.responseText.split("long_url_no_protocol\": \"");
-      if (result[1]) {
-        result = result[1];
-      } else {
-        callback(link);
-      }
-      result = result.split("\"");
-      if (result[0]) {
-        callback(result[0]);
-      } else {
-        callback(link);
-      }
+    if (xhttp.status == 200) {
+      callback(xhttp.responseURL);
+      xhttp.onreadystatechange = null;
     }
   };
-  xhttp.open("GET", link.replace('http://', 'https://') + '+', true);
+  xhttp.open("GET", link.replace('http://', 'https://'), true);
   xhttp.send();
 }
 
